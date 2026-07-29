@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafio Fitness do Casal 💪💕</title>
+<style>
+  :root{
+    --pink:#ff5e9e;
+    --pink-dark:#e83f82;
+    --purple:#8b5cf6;
+    --purple-dark:#6d28d9;
+    --bg1:#1a0b2e;
+    --bg2:#2d1250;
+    --card:#ffffff0f;
+    --card-solid:#25123f;
+    --text:#f5f0ff;
+    --text-dim:#c9b8e8;
+    --green:#4ade80;
+    --gold:#fbbf24;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2) 60%, #3a0f4a);
+    color:var(--text);
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+
+  header{text-align:center;margin-bottom:24px;}
+  header h1{
+    font-size:1.9rem;margin:0 0 6px;
+    background:linear-gradient(90deg,var(--pink),var(--purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-weight:800;
+  }
+  header p{color:var(--text-dim);margin:0;font-size:.95rem;}
+
+  .tabs{
+    display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;
+  }
+  .tab{
+    padding:10px 22px;border-radius:999px;border:2px solid transparent;
+    background:var(--card);cursor:pointer;font-weight:600;color:var(--text-dim);
+    transition:.2s;font-size:.95rem;
+  }
+  .tab.active{
+    background:linear-gradient(90deg,var(--pink),var(--purple));
+    color:#fff;border-color:#fff3;box-shadow:0 4px 18px -4px var(--pink);
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid #ffffff1a;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:18px;
+    backdrop-filter:blur(6px);
+  }
+
+  .streak-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+  .stat{
+    flex:1;min-width:120px;
+    background:#ffffff0d;border-radius:14px;padding:14px;text-align:center;
+  }
+  .stat .num{font-size:1.6rem;font-weight:800;}
+  .stat .label{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
+  .stat.fire .num{color:var(--gold);}
+  .stat.pts .num{color:var(--pink);}
+  .stat.pct .num{color:var(--green);}
+
+  .habits{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .habit{
+    display:flex;align-items:center;gap:14px;
+    background:#ffffff08;border:1px solid #ffffff14;
+    border-radius:14px;padding:14px 16px;cursor:pointer;
+    transition:.15s;user-select:none;
+  }
+  .habit:hover{background:#ffffff12;}
+  .habit.done{
+    background:linear-gradient(90deg,#ff5e9e22,#8b5cf622);
+    border-color:var(--pink);
+  }
+  .habit .icon{font-size:1.6rem;width:36px;text-align:center;}
+  .habit .info{flex:1;}
+  .habit .name{font-weight:600;}
+  .habit .sub{font-size:.75rem;color:var(--text-dim);}
+  .habit .check{
+    width:26px;height:26px;border-radius:50%;
+    border:2px solid var(--text-dim);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.9rem;flex-shrink:0;
+  }
+  .habit.done .check{
+    background:linear-gradient(90deg,var(--pink),var(--purple));
+    border-color:transparent;color:#fff;
+  }
+  .date-nav{
+    display:flex;align-items:center;justify-content:center;gap:16px;
+    margin-bottom:16px;
+  }
+  .date-nav button{
+    width:36px;height:36px;border-radius:50%;border:1px solid #ffffff2a;
+    background:#ffffff0d;color:var(--text);font-size:1rem;cursor:pointer;
+  }
+  .date-nav button:disabled{opacity:.3;cursor:default;}
+  .date-nav button:not(:disabled):hover{background:#ffffff1f;}
+  .date-nav .label{
+    font-weight:700;min-width:150px;text-align:center;font-size:.95rem;
+  }
+  .date-nav .label .today-badge{
+    display:block;font-size:.7rem;color:var(--pink);font-weight:600;
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+
+  .add-habit{display:flex;gap:8px;margin-top:14px;}
+  .add-habit input{
+    flex:1;padding:10px 14px;border-radius:10px;border:1px solid #ffffff2a;
+    background:#ffffff0d;color:var(--text);font-size:.9rem;
+  }
+  .add-habit input::placeholder{color:var(--text-dim);}
+  .add-habit button, .primary-btn{
+    padding:10px 18px;border-radius:10px;border:none;
+    background:linear-gradient(90deg,var(--pink),var(--purple));
+    color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;
+  }
+  .add-habit button:hover, .primary-btn:hover{filter:brightness(1.1);}
+
+  h2.section-title{
+    font-size:1.1rem;margin:0 0 14px;color:var(--text);
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .versus{
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    text-align:center;margin-bottom:6px;
+  }
+  .versus .side{flex:1;}
+  .versus .name{font-weight:800;font-size:1.1rem;}
+  .versus .score{font-size:2.2rem;font-weight:900;}
+  .versus .vs{font-size:1.4rem;color:var(--text-dim);font-weight:700;}
+  .side.leti .score{color:var(--pink);}
+  .side.joy .score{color:var(--purple);}
+  .versus .crown{font-size:1.3rem;}
+
+  table.week{width:100%;border-collapse:collapse;margin-top:10px;font-size:.85rem;}
+  table.week th, table.week td{padding:8px 4px;text-align:center;}
+  table.week th{color:var(--text-dim);font-weight:600;font-size:.75rem;}
+  table.week td.person{text-align:left;font-weight:700;padding-left:8px;}
+  .cell{
+    width:30px;height:30px;border-radius:8px;margin:0 auto;
+    display:flex;align-items:center;justify-content:center;font-size:.8rem;
+    background:#ffffff0d;
+  }
+  .cell.c0{background:#ffffff0d;}
+  .cell.c1{background:#8b5cf655;}
+  .cell.c2{background:#8b5cf699;}
+  .cell.c3{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;}
+
+  .bonus-banner{
+    text-align:center;padding:12px;border-radius:14px;margin-top:14px;
+    background:linear-gradient(90deg,#fbbf2433,#ff5e9e33);
+    border:1px dashed var(--gold);font-weight:700;font-size:.9rem;
+    display:none;
+  }
+  .bonus-banner.show{display:block;}
+
+  footer{text-align:center;color:var(--text-dim);font-size:.8rem;margin-top:30px;}
+  .heart{color:var(--pink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Desafio Fitness do Casal 💪💕</h1>
+    <p>Leticia &amp; Joyce — cada hábito marcado é um ponto pro emagrecimento (e pro ego de quem tá ganhando 😏)</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="card">
+    <div class="streak-row" id="statsRow"></div>
+    <div class="bonus-banner" id="bonusBanner">🔥 Combo do dia completo! +20 pontos bônus</div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">✅ Hábitos do dia</h2>
+    <div class="date-nav">
+      <button id="prevDayBtn">◀</button>
+      <div class="label" id="dateLabel"></div>
+      <button id="nextDayBtn">▶</button>
+    </div>
+    <div class="habits" id="habitsList"></div>
+    <p style="text-align:center;color:var(--text-dim);font-size:.75rem;margin-top:14px;">dois cliques num hábito apagam ele da lista (se cadastrou por engano)</p>
+    <div class="add-habit">
+      <input id="newHabitInput" type="text" placeholder="Adicionar novo hábito (ex: alongamento, 8mil passos...)" maxlength="40">
+      <button id="addHabitBtn">+ Add</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">⚔️ Placar do casal</h2>
+    <div class="versus" id="versusRow"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📅 Últimos 7 dias</h2>
+    <div style="overflow-x:auto;">
+      <table class="week" id="weekTable"></table>
+    </div>
+  </div>
+
+  <footer>feito com <span class="heart">♥</span> pra Leticia &amp; Joyce ficarem chapadas de saúde</footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'casal-fitness-tracker-v1';
+const PEOPLE = [
+  {id:'leticia', name:'Leticia', emoji:'👩‍🦰'},
+  {id:'joyce', name:'Joyce', emoji:'👩'}
+];
+const DEFAULT_HABITS = [
+  {id:'agua', name:'Beber água', icon:'💧', sub:'2L+ no dia'},
+  {id:'dieta', name:'Não furar a dieta', icon:'🥗', sub:'sem beliscar besteira'},
+  {id:'muscul', name:'Musculação', icon:'🏋️', sub:'treino de força'},
+  {id:'cardio', name:'Cardio / Luta', icon:'🥊', sub:'suar a camisa'},
+  {id:'sono', name:'Dormir bem', icon:'😴', sub:'7h+ de sono'},
+];
+
+function todayStr(offset=0){
+  const d = new Date();
+  d.setDate(d.getDate()+offset);
+  return d.toISOString().slice(0,10);
+}
+
+function loadData(){
+  let raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  const data = { habits: DEFAULT_HABITS, logs: {} };
+  PEOPLE.forEach(p => data.logs[p.id] = {});
+  return data;
+}
+function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+let state = loadData();
+if(!state.habits) state.habits = DEFAULT_HABITS;
+PEOPLE.forEach(p => { if(!state.logs[p.id]) state.logs[p.id] = {}; });
+
+let activePerson = PEOPLE[0].id;
+let selectedDate = todayStr();
+
+function getDayLog(personId, date){
+  const logs = state.logs[personId];
+  if(!logs[date]) logs[date] = {};
+  return logs[date];
+}
+
+function toggleHabit(personId, habitId, date){
+  const day = getDayLog(personId, date);
+  day[habitId] = !day[habitId];
+  saveData();
+  render();
+}
+
+function changeDate(deltaDays){
+  const d = new Date(selectedDate + 'T00:00:00');
+  d.setDate(d.getDate() + deltaDays);
+  const newDate = d.toISOString().slice(0,10);
+  if(newDate > todayStr()) return;
+  selectedDate = newDate;
+  render();
+}
+
+function deleteHabit(habitId){
+  if(!confirm('Remover este hábito da lista?')) return;
+  state.habits = state.habits.filter(h => h.id !== habitId);
+  saveData();
+  render();
+}
+
+function addHabit(name){
+  name = name.trim();
+  if(!name) return;
+  const id = 'custom-' + Date.now();
+  state.habits.push({id, name, icon:'⭐', sub:'hábito personalizado'});
+  saveData();
+  render();
+}
+
+function computeStreak(personId){
+  let streak = 0;
+  let offset = 0;
+  while(true){
+    const date = todayStr(-offset);
+    const day = state.logs[personId][date];
+    const total = state.habits.length;
+    if(!day || total===0) break;
+    const doneCount = state.habits.filter(h => day[h.id]).length;
+    if(doneCount < total) break;
+    streak++;
+    offset++;
+  }
+  return streak;
+}
+
+function computePoints(personId){
+  let points = 0;
+  const logs = state.logs[personId];
+  Object.keys(logs).forEach(date => {
+    const day = logs[date];
+    const doneCount = state.habits.filter(h => day[h.id]).length;
+    points += doneCount * 10;
+    if(state.habits.length && doneCount === state.habits.length) points += 20;
+  });
+  return points;
+}
+
+function dayPct(personId, date){
+  const day = getDayLog(personId, date);
+  const total = state.habits.length;
+  if(total===0) return 0;
+  const done = state.habits.filter(h => day[h.id]).length;
+  return Math.round((done/total)*100);
+}
+
+function renderTabs(){
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = '';
+  PEOPLE.forEach(p => {
+    const btn = document.createElement('div');
+    btn.className = 'tab' + (p.id === activePerson ? ' active' : '');
+    btn.textContent = p.emoji + ' ' + p.name;
+    btn.onclick = () => { activePerson = p.id; render(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderStats(){
+  const row = document.getElementById('statsRow');
+  const streak = computeStreak(activePerson);
+  const points = computePoints(activePerson);
+  const pct = dayPct(activePerson, selectedDate);
+  row.innerHTML = `
+    <div class="stat fire"><div class="num">${streak}🔥</div><div class="label">dias seguidos</div></div>
+    <div class="stat pts"><div class="num">${points}</div><div class="label">pontos totais</div></div>
+    <div class="stat pct"><div class="num">${pct}%</div><div class="label">${selectedDate === todayStr() ? 'hoje' : 'no dia'}</div></div>
+  `;
+  const day = getDayLog(activePerson, selectedDate);
+  const doneCount = state.habits.filter(h => day[h.id]).length;
+  const banner = document.getElementById('bonusBanner');
+  banner.classList.toggle('show', state.habits.length>0 && doneCount === state.habits.length);
+}
+
+function renderDateNav(){
+  const label = document.getElementById('dateLabel');
+  const isToday = selectedDate === todayStr();
+  const dt = new Date(selectedDate + 'T00:00:00');
+  const formatted = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+  const weekday = dt.toLocaleDateString('pt-BR', {weekday:'long'});
+  label.innerHTML = isToday
+    ? `<span class="today-badge">hoje</span>${formatted}`
+    : `<span class="today-badge">${weekday}</span>${formatted}`;
+  document.getElementById('nextDayBtn').disabled = isToday;
+}
+
+function renderHabits(){
+  const list = document.getElementById('habitsList');
+  list.innerHTML = '';
+  const day = getDayLog(activePerson, selectedDate);
+  state.habits.forEach(h => {
+    const done = !!day[h.id];
+    const el = document.createElement('div');
+    el.className = 'habit' + (done ? ' done' : '');
+    el.innerHTML = `
+      <div class="icon">${h.icon}</div>
+      <div class="info">
+        <div class="name">${h.name}</div>
+        <div class="sub">${h.sub || ''}</div>
+      </div>
+      <div class="check">${done ? '✓' : ''}</div>
+    `;
+    el.onclick = () => toggleHabit(activePerson, h.id, selectedDate);
+    el.ondblclick = (e) => { e.stopPropagation(); deleteHabit(h.id); };
+    list.appendChild(el);
+  });
+}
+
+function renderVersus(){
+  const row = document.getElementById('versusRow');
+  const pointsMap = {};
+  PEOPLE.forEach(p => pointsMap[p.id] = computePoints(p.id));
+  const [a,b] = PEOPLE;
+  const aWinning = pointsMap[a.id] > pointsMap[b.id];
+  const bWinning = pointsMap[b.id] > pointsMap[a.id];
+  row.innerHTML = `
+    <div class="side leti">
+      <div class="name">${a.emoji} ${a.name} ${aWinning?'<span class="crown">👑</span>':''}</div>
+      <div class="score">${pointsMap[a.id]}</div>
+    </div>
+    <div class="vs">VS</div>
+    <div class="side joy">
+      <div class="name">${b.emoji} ${b.name} ${bWinning?'<span class="crown">👑</span>':''}</div>
+      <div class="score">${pointsMap[b.id]}</div>
+    </div>
+  `;
+}
+
+function renderWeek(){
+  const table = document.getElementById('weekTable');
+  const days = [];
+  for(let i=6;i>=0;i--) days.push(todayStr(-i));
+  const fmt = (d) => {
+    const dt = new Date(d+'T00:00:00');
+    return dt.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','');
+  };
+  let thead = '<tr><th></th>' + days.map(d => `<th>${fmt(d)}<br>${d.slice(8,10)}/${d.slice(5,7)}</th>`).join('') + '</tr>';
+  let rows = '';
+  PEOPLE.forEach(p => {
+    rows += `<tr><td class="person">${p.emoji} ${p.name}</td>`;
+    days.forEach(date => {
+      const day = state.logs[p.id][date] || {};
+      const total = state.habits.length;
+      const done = state.habits.filter(h => day[h.id]).length;
+      let level = 0;
+      if(total>0){
+        const ratio = done/total;
+        if(ratio>=1) level=3; else if(ratio>=0.5) level=2; else if(ratio>0) level=1;
+      }
+      const label = total>0 ? (level===3?'💯':(done>0?done:'')) : '';
+      const isSelected = date === selectedDate;
+      rows += `<td><div class="cell c${level}${isSelected?' selected':''}" data-date="${date}" style="cursor:pointer;${isSelected?'outline:2px solid #fff;':''}">${label}</div></td>`;
+    });
+    rows += '</tr>';
+  });
+  table.innerHTML = thead + rows;
+  table.querySelectorAll('.cell[data-date]').forEach(cell => {
+    cell.onclick = () => { selectedDate = cell.dataset.date; render(); };
+  });
+}
+
+function render(){
+  renderTabs();
+  renderDateNav();
+  renderStats();
+  renderHabits();
+  renderVersus();
+  renderWeek();
+}
+
+document.getElementById('prevDayBtn').onclick = () => changeDate(-1);
+document.getElementById('nextDayBtn').onclick = () => changeDate(1);
+
+document.getElementById('addHabitBtn').onclick = () => {
+  const input = document.getElementById('newHabitInput');
+  addHabit(input.value);
+  input.value = '';
+};
+document.getElementById('newHabitInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    addHabit(e.target.value);
+    e.target.value = '';
+  }
+});
+
+render();
+</script>
+</body>
+</html>
