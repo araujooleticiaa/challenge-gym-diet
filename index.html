@@ -165,6 +165,7 @@
   <header>
     <h1>Desafio Fitness do Casal 💪💕</h1>
     <p>Leticia &amp; Joyce — cada hábito marcado é um ponto pro emagrecimento (e pro ego de quem tá ganhando 😏)</p>
+    <p id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-top:8px;">☁️ conectando...</p>
   </header>
 
   <div class="tabs" id="tabs"></div>
@@ -199,6 +200,7 @@
   <footer>feito com <span class="heart">♥</span> pra Leticia &amp; Joyce ficarem chapadas de saúde</footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const STORAGE_KEY = 'casal-fitness-tracker-v1';
 const PEOPLE = [
@@ -248,6 +250,7 @@ function toggleHabit(personId, habitId, date){
   day[habitId] = !day[habitId];
   saveData();
   render();
+  syncHabitLog(personId, habitId, date, day[habitId]);
 }
 
 function changeDate(deltaDays){
@@ -429,7 +432,60 @@ function render(){
 document.getElementById('prevDayBtn').onclick = () => changeDate(-1);
 document.getElementById('nextDayBtn').onclick = () => changeDate(1);
 
+// ===== Supabase sync (shared table across devices/browsers) =====
+const SB_URL = 'https://ysnwsrndphmgdtynwxtu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlzbndzcm5kcGhtZ2R0eW53eHR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTIxODEsImV4cCI6MjEwMDQ4ODE4MX0.HzO38CqXLw0JIa0B2uDEzA5CWRSYsuMdbCjRCJgICag';
+const SB_TABLE = 'habit_logs';
+
+function setSyncStatus(msg){
+  const el = document.getElementById('syncStatus');
+  if(el) el.textContent = msg;
+}
+
+let sb = null;
+try{ if(window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY); }catch(e){ console.warn('supabase init failed', e); }
+if(!sb) setSyncStatus('☁️ offline — salvando só neste navegador');
+
+async function syncHabitLog(personId, habitId, date, isDone){
+  if(!sb) return;
+  const error = isDone
+    ? (await sb.from(SB_TABLE).upsert({ person: personId, habit_id: habitId, log_date: date, done: true }, { onConflict: 'person,habit_id,log_date' })).error
+    : (await sb.from(SB_TABLE).delete().match({ person: personId, habit_id: habitId, log_date: date })).error;
+  setSyncStatus(error ? '⚠️ falha ao salvar na nuvem' : '☁️ sincronizado');
+}
+
+function applyCloudRows(rows){
+  PEOPLE.forEach(p => { state.logs[p.id] = {}; });
+  rows.forEach(row => {
+    if(!state.logs[row.person]) return;
+    if(!state.logs[row.person][row.log_date]) state.logs[row.person][row.log_date] = {};
+    state.logs[row.person][row.log_date][row.habit_id] = true;
+  });
+  saveData();
+}
+
+async function loadFromCloud(){
+  if(!sb) return;
+  setSyncStatus('☁️ sincronizando...');
+  const { data, error } = await sb.from(SB_TABLE).select('person,habit_id,log_date,done').eq('done', true);
+  if(error){ setSyncStatus('⚠️ erro ao carregar da nuvem'); return; }
+  applyCloudRows(data || []);
+  render();
+  setSyncStatus('☁️ sincronizado');
+}
+
+function subscribeRealtime(){
+  if(!sb) return;
+  sb.channel('habit_logs_changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: SB_TABLE }, () => loadFromCloud())
+    .subscribe();
+}
+
+document.addEventListener('visibilitychange', () => { if(!document.hidden) loadFromCloud(); });
+setInterval(() => { if(!document.hidden) loadFromCloud(); }, 20000);
+
 render();
+loadFromCloud().then(subscribeRealtime);
 </script>
 </body>
 </html>
