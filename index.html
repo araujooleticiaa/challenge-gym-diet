@@ -116,19 +116,6 @@
     text-transform:uppercase;letter-spacing:.5px;
   }
 
-  .add-habit{display:flex;gap:8px;margin-top:14px;}
-  .add-habit input{
-    flex:1;padding:10px 14px;border-radius:10px;border:1px solid #ffffff2a;
-    background:#ffffff0d;color:var(--text);font-size:.9rem;
-  }
-  .add-habit input::placeholder{color:var(--text-dim);}
-  .add-habit button, .primary-btn{
-    padding:10px 18px;border-radius:10px;border:none;
-    background:linear-gradient(90deg,var(--pink),var(--purple));
-    color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;
-  }
-  .add-habit button:hover, .primary-btn:hover{filter:brightness(1.1);}
-
   h2.section-title{
     font-size:1.1rem;margin:0 0 14px;color:var(--text);
     display:flex;align-items:center;gap:8px;
@@ -195,11 +182,6 @@
       <button id="nextDayBtn">▶</button>
     </div>
     <div class="habits" id="habitsList"></div>
-    <p style="text-align:center;color:var(--text-dim);font-size:.75rem;margin-top:14px;">dois cliques num hábito apagam ele da lista (se cadastrou por engano)</p>
-    <div class="add-habit">
-      <input id="newHabitInput" type="text" placeholder="Adicionar novo hábito (ex: alongamento, 8mil passos...)" maxlength="40">
-      <button id="addHabitBtn">+ Add</button>
-    </div>
   </div>
 
   <div class="card">
@@ -280,15 +262,6 @@ function changeDate(deltaDays){
 function deleteHabit(habitId){
   if(!confirm('Remover este hábito da lista?')) return;
   state.habits = state.habits.filter(h => h.id !== habitId);
-  saveData();
-  render();
-}
-
-function addHabit(name){
-  name = name.trim();
-  if(!name) return;
-  const id = 'custom-' + Date.now();
-  state.habits.push({id, name, icon:'⭐', sub:'hábito personalizado'});
   saveData();
   render();
 }
@@ -455,18 +428,6 @@ function render(){
 
 document.getElementById('prevDayBtn').onclick = () => changeDate(-1);
 document.getElementById('nextDayBtn').onclick = () => changeDate(1);
-
-document.getElementById('addHabitBtn').onclick = () => {
-  const input = document.getElementById('newHabitInput');
-  addHabit(input.value);
-  input.value = '';
-};
-document.getElementById('newHabitInput').addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){
-    addHabit(e.target.value);
-    e.target.value = '';
-  }
-});
 
 render();
 </script>
