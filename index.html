@@ -215,10 +215,17 @@ const DEFAULT_HABITS = [
   {id:'sono', name:'Dormir bem', icon:'😴', sub:'7h+ de sono'},
 ];
 
+function formatLocalDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
 function todayStr(offset=0){
   const d = new Date();
   d.setDate(d.getDate()+offset);
-  return d.toISOString().slice(0,10);
+  return formatLocalDate(d);
 }
 
 function loadData(){
@@ -256,7 +263,7 @@ function toggleHabit(personId, habitId, date){
 function changeDate(deltaDays){
   const d = new Date(selectedDate + 'T00:00:00');
   d.setDate(d.getDate() + deltaDays);
-  const newDate = d.toISOString().slice(0,10);
+  const newDate = formatLocalDate(d);
   if(newDate > todayStr()) return;
   selectedDate = newDate;
   render();
