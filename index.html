@@ -3,496 +3,452 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desafio Fitness do Casal 💪💕</title>
+<title>Corpo em Progresso · Treino, Caminhada & Remo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  :root{
-    --pink:#ff5e9e;
-    --pink-dark:#e83f82;
-    --purple:#8b5cf6;
-    --purple-dark:#6d28d9;
-    --bg1:#1a0b2e;
-    --bg2:#2d1250;
-    --card:#ffffff0f;
-    --card-solid:#25123f;
-    --text:#f5f0ff;
-    --text-dim:#c9b8e8;
-    --green:#4ade80;
-    --gold:#fbbf24;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    min-height:100vh;
-    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-    background:linear-gradient(160deg,var(--bg1),var(--bg2) 60%, #3a0f4a);
-    color:var(--text);
-    padding:20px 14px 60px;
-  }
-  .wrap{max-width:920px;margin:0 auto;}
-
-  header{text-align:center;margin-bottom:24px;}
-  header h1{
-    font-size:1.9rem;margin:0 0 6px;
-    background:linear-gradient(90deg,var(--pink),var(--purple));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    font-weight:800;
-  }
-  header p{color:var(--text-dim);margin:0;font-size:.95rem;}
-
-  .tabs{
-    display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;
-  }
-  .tab{
-    padding:10px 22px;border-radius:999px;border:2px solid transparent;
-    background:var(--card);cursor:pointer;font-weight:600;color:var(--text-dim);
-    transition:.2s;font-size:.95rem;
-  }
-  .tab.active{
-    background:linear-gradient(90deg,var(--pink),var(--purple));
-    color:#fff;border-color:#fff3;box-shadow:0 4px 18px -4px var(--pink);
-  }
-
-  .card{
-    background:var(--card);
-    border:1px solid #ffffff1a;
-    border-radius:18px;
-    padding:20px;
-    margin-bottom:18px;
-    backdrop-filter:blur(6px);
-  }
-
-  .streak-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
-  .stat{
-    flex:1;min-width:120px;
-    background:#ffffff0d;border-radius:14px;padding:14px;text-align:center;
-  }
-  .stat .num{font-size:1.6rem;font-weight:800;}
-  .stat .label{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
-  .stat.fire .num{color:var(--gold);}
-  .stat.pts .num{color:var(--pink);}
-  .stat.pct .num{color:var(--green);}
-
-  .habits{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
-  .habit{
-    display:flex;align-items:center;gap:14px;
-    background:#ffffff08;border:1px solid #ffffff14;
-    border-radius:14px;padding:14px 16px;cursor:pointer;
-    transition:.15s;user-select:none;
-  }
-  .habit:hover{background:#ffffff12;}
-  .habit.done{
-    background:linear-gradient(90deg,#ff5e9e22,#8b5cf622);
-    border-color:var(--pink);
-  }
-  .habit .icon{font-size:1.6rem;width:36px;text-align:center;}
-  .habit .info{flex:1;}
-  .habit .name{font-weight:600;}
-  .habit .sub{font-size:.75rem;color:var(--text-dim);}
-  .habit .check{
-    width:26px;height:26px;border-radius:50%;
-    border:2px solid var(--text-dim);
-    display:flex;align-items:center;justify-content:center;
-    font-size:.9rem;flex-shrink:0;
-  }
-  .habit.done .check{
-    background:linear-gradient(90deg,var(--pink),var(--purple));
-    border-color:transparent;color:#fff;
-  }
-  .date-nav{
-    display:flex;align-items:center;justify-content:center;gap:16px;
-    margin-bottom:16px;
-  }
-  .date-nav button{
-    width:36px;height:36px;border-radius:50%;border:1px solid #ffffff2a;
-    background:#ffffff0d;color:var(--text);font-size:1rem;cursor:pointer;
-  }
-  .date-nav button:disabled{opacity:.3;cursor:default;}
-  .date-nav button:not(:disabled):hover{background:#ffffff1f;}
-  .date-nav .label{
-    font-weight:700;min-width:150px;text-align:center;font-size:.95rem;
-  }
-  .date-nav .label .today-badge{
-    display:block;font-size:.7rem;color:var(--pink);font-weight:600;
-    text-transform:uppercase;letter-spacing:.5px;
-  }
-
-  h2.section-title{
-    font-size:1.1rem;margin:0 0 14px;color:var(--text);
-    display:flex;align-items:center;gap:8px;
-  }
-
-  .versus{
-    display:flex;align-items:center;justify-content:center;gap:18px;
-    text-align:center;margin-bottom:6px;
-  }
-  .versus .side{flex:1;}
-  .versus .name{font-weight:800;font-size:1.1rem;}
-  .versus .score{font-size:2.2rem;font-weight:900;}
-  .versus .vs{font-size:1.4rem;color:var(--text-dim);font-weight:700;}
-  .side.leti .score{color:var(--pink);}
-  .side.joy .score{color:var(--purple);}
-  .versus .crown{font-size:1.3rem;}
-
-  table.week{width:100%;border-collapse:collapse;margin-top:10px;font-size:.85rem;}
-  table.week th, table.week td{padding:8px 4px;text-align:center;}
-  table.week th{color:var(--text-dim);font-weight:600;font-size:.75rem;}
-  table.week td.person{text-align:left;font-weight:700;padding-left:8px;}
-  .cell{
-    width:30px;height:30px;border-radius:8px;margin:0 auto;
-    display:flex;align-items:center;justify-content:center;font-size:.8rem;
-    background:#ffffff0d;
-  }
-  .cell.c0{background:#ffffff0d;}
-  .cell.c1{background:#8b5cf655;}
-  .cell.c2{background:#8b5cf699;}
-  .cell.c3{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;}
-
-  .bonus-banner{
-    text-align:center;padding:12px;border-radius:14px;margin-top:14px;
-    background:linear-gradient(90deg,#fbbf2433,#ff5e9e33);
-    border:1px dashed var(--gold);font-weight:700;font-size:.9rem;
-    display:none;
-  }
-  .bonus-banner.show{display:block;}
-
-  footer{text-align:center;color:var(--text-dim);font-size:.8rem;margin-top:30px;}
-  .heart{color:var(--pink);}
+:root{
+  --bg:#0b0f1a;--bg-2:#121826;--card:#161d2e;--card-2:#1c2436;
+  --border:#252d40;--border-glow:#2f3b57;--text:#f1f4fa;--text-2:#9aa4bd;--text-3:#5e6884;
+  --accent:#5b8cff;--accent-2:#7c5bff;--teal:#28d9b0;--amber:#ffb43d;--pink:#ff5b9c;--green:#3ee08a;
+  --radius:16px;--radius-sm:11px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(124,91,255,.18), transparent 55%),
+    radial-gradient(1000px 500px at 0% 10%, rgba(40,217,176,.12), transparent 50%),
+    var(--bg);
+  color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:2.2rem 1.5rem 4rem}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,var(--teal),var(--accent));display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 28px rgba(40,217,176,.35)}
+.brand h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.brand p{font-size:13px;color:var(--text-2);margin-top:2px}
+.streak{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(255,180,61,.15),rgba(255,91,156,.12));border:1px solid rgba(255,180,61,.3);padding:10px 16px;border-radius:13px}
+.streak i{color:var(--amber);font-size:18px}
+.streak b{font-size:17px;font-weight:700}
+.streak span{font-size:12px;color:var(--text-2);display:block;line-height:1.2}
+#syncStatus{font-size:12px;color:var(--text-3);margin:0 0 1.4rem;display:flex;align-items:center;gap:7px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.6rem}
+.stat{background:linear-gradient(160deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.3rem;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+.stat:hover{transform:translateY(-3px);border-color:var(--border-glow)}
+.stat .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:12px}
+.stat.a .ic{background:rgba(91,140,255,.15);color:var(--accent)}
+.stat.b .ic{background:rgba(40,217,176,.15);color:var(--teal)}
+.stat.c .ic{background:rgba(255,180,61,.15);color:var(--amber)}
+.stat.d .ic{background:rgba(62,224,138,.15);color:var(--green)}
+.stat .val{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.stat .lbl{font-size:12px;color:var(--text-2);margin-top:6px;font-weight:500}
+.sec-title{display:flex;align-items:center;gap:10px;margin:0 0 1rem;font-size:15px;font-weight:600}
+.sec-title i{color:var(--teal)}
+.sec-title .badge{margin-left:auto;font-size:11px;font-weight:600;color:var(--teal);background:rgba(40,217,176,.12);padding:5px 11px;border-radius:20px;border:1px solid rgba(40,217,176,.25)}
+.card{background:linear-gradient(160deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem 1.4rem;margin-bottom:1.6rem}
+/* Date nav */
+.date-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:1.1rem}
+.date-nav button{width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-size:14px;cursor:pointer;transition:all .2s}
+.date-nav button:hover:not(:disabled){background:var(--card-2);border-color:var(--border-glow)}
+.date-nav button:disabled{opacity:.3;cursor:not-allowed}
+.date-nav .dlabel{font-weight:700;min-width:170px;text-align:center;font-size:14px;text-transform:capitalize}
+.date-nav .dlabel small{display:block;font-size:11px;color:var(--teal);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+/* Habits */
+.habits{display:flex;flex-direction:column;gap:9px}
+.habit{display:flex;align-items:center;gap:14px;padding:1rem 1.1rem;border-radius:13px;cursor:pointer;transition:all .18s;background:var(--bg-2);border:1px solid var(--border);user-select:none}
+.habit:hover{border-color:var(--border-glow)}
+.habit.done{background:linear-gradient(135deg,rgba(40,217,176,.12),rgba(62,224,138,.08));border-color:rgba(62,224,138,.35)}
+.habit .h-ic{font-size:22px;width:34px;text-align:center;flex-shrink:0}
+.habit .h-body{flex:1;min-width:0}
+.habit .h-name{font-size:14px;font-weight:600}
+.habit.done .h-name{color:var(--text-2)}
+.habit .h-sub{font-size:11.5px;color:var(--text-3);margin-top:2px}
+.habit .check{width:26px;height:26px;border-radius:9px;border:2px solid var(--border-glow);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .25s;color:transparent;font-size:12px}
+.habit.done .check{background:linear-gradient(135deg,var(--teal),var(--green));border-color:var(--teal);color:#04140f}
+.combo{margin-top:1rem;text-align:center;padding:12px;border-radius:13px;background:linear-gradient(135deg,rgba(255,180,61,.16),rgba(255,91,156,.1));border:1px dashed var(--amber);font-weight:700;font-size:13px;color:var(--amber);display:none}
+.combo.show{display:block}
+/* Heatmap */
+.hm-grid{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:3px}
+.hm-cell{width:100%;aspect-ratio:1;border-radius:3px;background:var(--bg-2);border:1px solid var(--border)}
+.hm-1{background:rgba(40,217,176,.28);border-color:rgba(40,217,176,.35)}
+.hm-2{background:rgba(40,217,176,.55);border-color:rgba(40,217,176,.6)}
+.hm-3{background:var(--green);border-color:var(--green)}
+.hm-today{box-shadow:0 0 0 2px var(--accent)}
+.hm-legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:11px;font-size:11px;color:var(--text-3)}
+.hm-legend .hm-cell{width:11px;height:11px;aspect-ratio:auto;display:inline-block;margin-left:8px}
+.hm-legend .hm-cell:first-child{margin-left:0}
+/* Trackers */
+.trk-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.trk{background:linear-gradient(160deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.3rem;display:flex;flex-direction:column}
+.trk-head{display:flex;align-items:center;gap:11px;margin-bottom:1rem}
+.trk-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.trk.walk .trk-ic{background:rgba(40,217,176,.15);color:var(--teal)}
+.trk.row .trk-ic{background:rgba(91,140,255,.15);color:var(--accent)}
+.trk.lift .trk-ic{background:rgba(124,91,255,.15);color:#b9a5ff}
+.trk.weight .trk-ic{background:rgba(255,91,156,.15);color:var(--pink)}
+.trk-head h4{font-size:15px;font-weight:700}
+.trk-head span{font-size:11.5px;color:var(--text-2);display:block;margin-top:1px}
+.trk-summary{display:flex;gap:14px;margin-bottom:1rem;flex-wrap:wrap}
+.trk-kpi .num{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.trk-kpi .lbl{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.trk.walk .trk-kpi .num{color:var(--teal)}
+.trk.row .trk-kpi .num{color:var(--accent)}
+.trk.lift .trk-kpi .num{color:#b9a5ff}
+.trk.weight .trk-kpi .num{color:var(--pink)}
+.spark{width:100%;height:44px;margin-bottom:1rem}
+.trk-form{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:.9rem}
+.trk-form input{flex:1 1 70px;min-width:0;padding:9px 10px;border-radius:9px;background:var(--bg-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:12.5px;height:38px}
+.trk-form input:focus{outline:none;border-color:var(--accent)}
+.trk-form input[type=date]{flex:1 1 130px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.trk-form .add{flex:0 0 auto;width:38px;height:38px;border-radius:9px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--accent));color:#04140f;font-size:14px;display:flex;align-items:center;justify-content:center}
+.trk-form .add:hover{filter:brightness(1.1)}
+.trk-list{list-style:none;display:flex;flex-direction:column;gap:2px;max-height:180px;overflow-y:auto}
+.trk-list li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border);font-size:12.5px}
+.trk-list li:last-child{border:none}
+.trk-list .d{flex-shrink:0;width:56px;color:var(--text-3);font-family:'JetBrains Mono',monospace;font-size:11px}
+.trk-list .v{flex:1;color:var(--text);font-weight:600}
+.trk-list .v small{color:var(--text-2);font-weight:400;font-size:11px;margin-left:4px}
+.trk-list .del{flex-shrink:0;width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-3);cursor:pointer;font-size:10px}
+.trk-list .del:hover{border-color:var(--pink);color:var(--pink)}
+.trk-empty{font-size:12px;color:var(--text-3);text-align:center;padding:14px 4px;border:1px dashed var(--border);border-radius:9px}
+.footer{text-align:center;margin-top:2.5rem;font-size:12px;color:var(--text-3)}
+.footer b{color:var(--text-2)}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <header>
-    <h1>Desafio Fitness do Casal 💪💕</h1>
-    <p>Leticia &amp; Joyce — cada hábito marcado é um ponto pro emagrecimento (e pro ego de quem tá ganhando 😏)</p>
-    <p id="syncStatus" style="font-size:.75rem;color:var(--text-dim);margin-top:8px;">☁️ conectando...</p>
-  </header>
-
-  <div class="tabs" id="tabs"></div>
-
-  <div class="card">
-    <div class="streak-row" id="statsRow"></div>
-    <div class="bonus-banner" id="bonusBanner">🔥 Combo do dia completo! +20 pontos bônus</div>
+  <div class="top">
+    <div class="brand">
+      <div class="logo">🏋️‍♀️</div>
+      <div><h1>Corpo em Progresso</h1><p>Treino · Caminhada · Remo — um dia de cada vez · Leticia</p></div>
+    </div>
+    <div class="streak">
+      <i class="fa-solid fa-fire"></i>
+      <div><b id="streakNum">0</b><span id="streakLbl">dias seguidos</span></div>
+    </div>
   </div>
 
+  <div id="syncStatus"><i class="fa-solid fa-cloud"></i><span>Conectando…</span></div>
+
+  <div class="stats">
+    <div class="stat a"><div class="ic"><i class="fa-solid fa-fire"></i></div><div class="val" id="streakVal">0</div><div class="lbl">dias seguidos</div></div>
+    <div class="stat b"><div class="ic"><i class="fa-solid fa-calendar-check"></i></div><div class="val" id="activeVal">0</div><div class="lbl">dias ativos</div></div>
+    <div class="stat c"><div class="ic"><i class="fa-solid fa-bolt"></i></div><div class="val" id="ptsVal">0</div><div class="lbl">pontos totais</div></div>
+    <div class="stat d"><div class="ic"><i class="fa-solid fa-percent"></i></div><div class="val" id="pctVal">0%</div><div class="lbl" id="pctLbl">hoje</div></div>
+  </div>
+
+  <div class="sec-title"><i class="fa-solid fa-list-check"></i> Hábitos do dia<span class="badge" id="dayBadge">0/0</span></div>
   <div class="card">
-    <h2 class="section-title">✅ Hábitos do dia</h2>
     <div class="date-nav">
-      <button id="prevDayBtn">◀</button>
-      <div class="label" id="dateLabel"></div>
-      <button id="nextDayBtn">▶</button>
+      <button id="prevDay"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="dlabel" id="dateLabel"></div>
+      <button id="nextDay"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
     <div class="habits" id="habitsList"></div>
+    <div class="combo" id="combo">🔥 Dia completo! +20 pontos de bônus</div>
   </div>
 
+  <div class="sec-title"><i class="fa-solid fa-fire-flame-curved"></i> Consistência · últimos 180 dias</div>
   <div class="card">
-    <h2 class="section-title">⚔️ Placar do casal</h2>
-    <div class="versus" id="versusRow"></div>
-  </div>
-
-  <div class="card">
-    <h2 class="section-title">📅 Últimos 7 dias</h2>
-    <div style="overflow-x:auto;">
-      <table class="week" id="weekTable"></table>
+    <div class="hm-grid" id="heatmap"></div>
+    <div class="hm-legend">
+      menos
+      <span class="hm-cell"></span><span class="hm-cell hm-1"></span><span class="hm-cell hm-2"></span><span class="hm-cell hm-3"></span>
+      mais · <span class="hm-cell hm-today" style="margin-left:8px"></span> hoje
     </div>
   </div>
 
-  <footer>feito com <span class="heart">♥</span> pra Leticia &amp; Joyce ficarem chapadas de saúde</footer>
+  <div class="sec-title"><i class="fa-solid fa-chart-line"></i> Peso</div>
+  <div class="trk-grid">
+    <div class="trk weight">
+      <div class="trk-head"><div class="trk-ic">⚖️</div><div><h4>Peso corporal</h4><span>ao longo do tempo</span></div></div>
+      <div class="trk-summary">
+        <div class="trk-kpi"><div class="num" id="wLatest">–</div><div class="lbl">atual (kg)</div></div>
+        <div class="trk-kpi"><div class="num" id="wDelta">–</div><div class="lbl">variação total</div></div>
+      </div>
+      <svg class="spark" id="weightSpark" viewBox="0 0 300 44" preserveAspectRatio="none"></svg>
+      <div class="trk-form">
+        <input type="date" id="weightDate">
+        <input type="number" id="weightKg" placeholder="peso (kg)" step="0.1" min="0" inputmode="decimal" style="flex:1 1 140px">
+        <button class="add" data-add="weight"><i class="fa-solid fa-plus"></i></button>
+      </div>
+      <ul class="trk-list" id="weightList"></ul>
+    </div>
+  </div>
+
+  <div class="footer">feito com <b>♥</b> pra Leticia evoluir um dia de cada vez</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const STORAGE_KEY = 'casal-fitness-tracker-v1';
-const PEOPLE = [
-  {id:'leticia', name:'Leticia', emoji:'👩‍🦰'},
-  {id:'joyce', name:'Joyce', emoji:'👩'}
+/* ============================================================
+   Corpo em Progresso — treino / caminhada / remo
+   Offline-first (localStorage) + sync opcional via Supabase.
+   Hábitos -> tabela habit_logs (reaproveitada, person='leticia')
+   Trackers -> tabela fitness_log (nova; SQL no fim do arquivo)
+   ============================================================ */
+const PERSON='leticia';
+const HABITS=[
+  {id:'treino',   name:'Musculação',       sub:'treino de força',      icon:'💪'},
+  {id:'caminhada',name:'Caminhada',        sub:'sair pra andar',       icon:'🚶‍♀️'},
+  {id:'remo',     name:'Remo',             sub:'sessão de remo',       icon:'🚣‍♀️'},
+  {id:'agua',     name:'Beber água',       sub:'2L+ no dia',           icon:'💧'},
+  {id:'alongar',  name:'Alongar / mobilidade', sub:'10 min',           icon:'🧘‍♀️'},
+  {id:'dieta',    name:'Comer limpo',      sub:'sem furar a dieta',    icon:'🥗'},
+  {id:'sono',     name:'Dormir bem',       sub:'7h+ de sono',          icon:'😴'},
 ];
-const DEFAULT_HABITS = [
-  {id:'agua', name:'Beber água', icon:'💧', sub:'2L+ no dia'},
-  {id:'dieta', name:'Não furar a dieta', icon:'🥗', sub:'sem beliscar besteira'},
-  {id:'muscul', name:'Musculação', icon:'🏋️', sub:'treino de força'},
-  {id:'cardio', name:'Cardio / Luta', icon:'🥊', sub:'suar a camisa'},
-  {id:'sono', name:'Dormir bem', icon:'😴', sub:'7h+ de sono'},
-];
 
-function formatLocalDate(d){
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
+/* ---------- helpers de data ---------- */
+function fmtLocal(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
+function today(off=0){const d=new Date();d.setDate(d.getDate()+off);return fmtLocal(d);}
+function parseDate(s){return new Date(s+'T00:00:00');}
+function nf(n){return (Math.round(n*10)/10).toLocaleString('pt-BR');}
+
+/* ---------- estado ---------- */
+const LS_HABITS='cp_habits_v1', LS_TRK='cp_trackers_v1';
+let logs = JSON.parse(localStorage.getItem(LS_HABITS)||'{}');            // {date:{habitId:true}}
+let trackers = JSON.parse(localStorage.getItem(LS_TRK)||'null') || {weight:[]};
+if(!trackers.weight)trackers.weight=[];
+let selDate = today();
+
+function saveHabits(){localStorage.setItem(LS_HABITS,JSON.stringify(logs));}
+function saveTrackers(){localStorage.setItem(LS_TRK,JSON.stringify(trackers));}
+function dayLog(date){if(!logs[date])logs[date]={};return logs[date];}
+function cid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+
+/* ---------- métricas ---------- */
+function doneCount(date){const d=logs[date]||{};return HABITS.filter(h=>d[h.id]).length;}
+function dayPct(date){return Math.round(doneCount(date)/HABITS.length*100);}
+function isActive(date){return doneCount(date)>0;}
+function activeDays(){return Object.keys(logs).filter(isActive).length;}
+function totalPoints(){let p=0;Object.keys(logs).forEach(date=>{const c=doneCount(date);p+=c*10;if(c===HABITS.length)p+=20;});return p;}
+function streak(){
+  let s=0;
+  // permite o dia de hoje ainda estar vazio sem quebrar a sequência
+  let start = isActive(today()) ? 0 : 1;
+  for(let off=start;;off++){const date=today(-off);if(isActive(date))s++;else break;}
+  return s;
 }
 
-function todayStr(offset=0){
-  const d = new Date();
-  d.setDate(d.getDate()+offset);
-  return formatLocalDate(d);
-}
-
-function loadData(){
-  let raw = localStorage.getItem(STORAGE_KEY);
-  if(raw){
-    try{ return JSON.parse(raw); }catch(e){}
-  }
-  const data = { habits: DEFAULT_HABITS, logs: {} };
-  PEOPLE.forEach(p => data.logs[p.id] = {});
-  return data;
-}
-function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-
-let state = loadData();
-if(!state.habits) state.habits = DEFAULT_HABITS;
-PEOPLE.forEach(p => { if(!state.logs[p.id]) state.logs[p.id] = {}; });
-
-let activePerson = PEOPLE[0].id;
-let selectedDate = todayStr();
-
-function getDayLog(personId, date){
-  const logs = state.logs[personId];
-  if(!logs[date]) logs[date] = {};
-  return logs[date];
-}
-
-function toggleHabit(personId, habitId, date){
-  const day = getDayLog(personId, date);
-  day[habitId] = !day[habitId];
-  saveData();
-  render();
-  syncHabitLog(personId, habitId, date, day[habitId]);
-}
-
-function changeDate(deltaDays){
-  const d = new Date(selectedDate + 'T00:00:00');
-  d.setDate(d.getDate() + deltaDays);
-  const newDate = formatLocalDate(d);
-  if(newDate > todayStr()) return;
-  selectedDate = newDate;
-  render();
-}
-
-function deleteHabit(habitId){
-  if(!confirm('Remover este hábito da lista?')) return;
-  state.habits = state.habits.filter(h => h.id !== habitId);
-  saveData();
-  render();
-}
-
-function computeStreak(personId){
-  let streak = 0;
-  let offset = 0;
-  while(true){
-    const date = todayStr(-offset);
-    const day = state.logs[personId][date];
-    const total = state.habits.length;
-    if(!day || total===0) break;
-    const doneCount = state.habits.filter(h => day[h.id]).length;
-    if(doneCount < total) break;
-    streak++;
-    offset++;
-  }
-  return streak;
-}
-
-function computePoints(personId){
-  let points = 0;
-  const logs = state.logs[personId];
-  Object.keys(logs).forEach(date => {
-    const day = logs[date];
-    const doneCount = state.habits.filter(h => day[h.id]).length;
-    points += doneCount * 10;
-    if(state.habits.length && doneCount === state.habits.length) points += 20;
-  });
-  return points;
-}
-
-function dayPct(personId, date){
-  const day = getDayLog(personId, date);
-  const total = state.habits.length;
-  if(total===0) return 0;
-  const done = state.habits.filter(h => day[h.id]).length;
-  return Math.round((done/total)*100);
-}
-
-function renderTabs(){
-  const tabs = document.getElementById('tabs');
-  tabs.innerHTML = '';
-  PEOPLE.forEach(p => {
-    const btn = document.createElement('div');
-    btn.className = 'tab' + (p.id === activePerson ? ' active' : '');
-    btn.textContent = p.emoji + ' ' + p.name;
-    btn.onclick = () => { activePerson = p.id; render(); };
-    tabs.appendChild(btn);
-  });
-}
-
+/* ---------- render: stats + hábitos ---------- */
 function renderStats(){
-  const row = document.getElementById('statsRow');
-  const streak = computeStreak(activePerson);
-  const points = computePoints(activePerson);
-  const pct = dayPct(activePerson, selectedDate);
-  row.innerHTML = `
-    <div class="stat fire"><div class="num">${streak}🔥</div><div class="label">dias seguidos</div></div>
-    <div class="stat pts"><div class="num">${points}</div><div class="label">pontos totais</div></div>
-    <div class="stat pct"><div class="num">${pct}%</div><div class="label">${selectedDate === todayStr() ? 'hoje' : 'no dia'}</div></div>
-  `;
-  const day = getDayLog(activePerson, selectedDate);
-  const doneCount = state.habits.filter(h => day[h.id]).length;
-  const banner = document.getElementById('bonusBanner');
-  banner.classList.toggle('show', state.habits.length>0 && doneCount === state.habits.length);
+  document.getElementById('streakNum').textContent=streak();
+  document.getElementById('streakVal').textContent=streak();
+  document.getElementById('activeVal').textContent=activeDays();
+  document.getElementById('ptsVal').textContent=totalPoints().toLocaleString('pt-BR');
+  const isToday=selDate===today();
+  document.getElementById('pctVal').textContent=dayPct(selDate)+'%';
+  document.getElementById('pctLbl').textContent=isToday?'hoje':'no dia';
 }
-
 function renderDateNav(){
-  const label = document.getElementById('dateLabel');
-  const isToday = selectedDate === todayStr();
-  const dt = new Date(selectedDate + 'T00:00:00');
-  const formatted = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-  const weekday = dt.toLocaleDateString('pt-BR', {weekday:'long'});
-  label.innerHTML = isToday
-    ? `<span class="today-badge">hoje</span>${formatted}`
-    : `<span class="today-badge">${weekday}</span>${formatted}`;
-  document.getElementById('nextDayBtn').disabled = isToday;
+  const isToday=selDate===today();
+  const dt=parseDate(selDate);
+  const dnum=dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const wd=dt.toLocaleDateString('pt-BR',{weekday:'long'});
+  document.getElementById('dateLabel').innerHTML=`<small>${isToday?'hoje':wd}</small>${dnum}`;
+  document.getElementById('nextDay').disabled=isToday;
 }
-
 function renderHabits(){
-  const list = document.getElementById('habitsList');
-  list.innerHTML = '';
-  const day = getDayLog(activePerson, selectedDate);
-  state.habits.forEach(h => {
-    const done = !!day[h.id];
-    const el = document.createElement('div');
-    el.className = 'habit' + (done ? ' done' : '');
-    el.innerHTML = `
-      <div class="icon">${h.icon}</div>
-      <div class="info">
-        <div class="name">${h.name}</div>
-        <div class="sub">${h.sub || ''}</div>
-      </div>
-      <div class="check">${done ? '✓' : ''}</div>
-    `;
-    el.onclick = () => toggleHabit(activePerson, h.id, selectedDate);
-    el.ondblclick = (e) => { e.stopPropagation(); deleteHabit(h.id); };
+  const list=document.getElementById('habitsList');list.innerHTML='';
+  const d=dayLog(selDate);
+  HABITS.forEach(h=>{
+    const done=!!d[h.id];
+    const el=document.createElement('div');
+    el.className='habit'+(done?' done':'');
+    el.innerHTML=`<div class="h-ic">${h.icon}</div>
+      <div class="h-body"><div class="h-name">${h.name}</div><div class="h-sub">${h.sub}</div></div>
+      <div class="check"><i class="fa-solid fa-check"></i></div>`;
+    el.onclick=()=>toggleHabit(h.id);
     list.appendChild(el);
   });
+  const c=doneCount(selDate);
+  document.getElementById('dayBadge').textContent=`${c}/${HABITS.length}`;
+  document.getElementById('combo').classList.toggle('show',c===HABITS.length);
+}
+function toggleHabit(id){
+  const d=dayLog(selDate);
+  d[id]=!d[id];
+  if(!d[id])delete d[id];
+  saveHabits();
+  renderStats();renderHabits();renderHeatmap();
+  cloudToggleHabit(id,selDate,!!d[id]);
+}
+function changeDate(delta){
+  const nd=fmtLocal((()=>{const d=parseDate(selDate);d.setDate(d.getDate()+delta);return d;})());
+  if(nd>today())return;
+  selDate=nd;renderDateNav();renderStats();renderHabits();
 }
 
-function renderVersus(){
-  const row = document.getElementById('versusRow');
-  const pointsMap = {};
-  PEOPLE.forEach(p => pointsMap[p.id] = computePoints(p.id));
-  const [a,b] = PEOPLE;
-  const aWinning = pointsMap[a.id] > pointsMap[b.id];
-  const bWinning = pointsMap[b.id] > pointsMap[a.id];
-  row.innerHTML = `
-    <div class="side leti">
-      <div class="name">${a.emoji} ${a.name} ${aWinning?'<span class="crown">👑</span>':''}</div>
-      <div class="score">${pointsMap[a.id]}</div>
-    </div>
-    <div class="vs">VS</div>
-    <div class="side joy">
-      <div class="name">${b.emoji} ${b.name} ${bWinning?'<span class="crown">👑</span>':''}</div>
-      <div class="score">${pointsMap[b.id]}</div>
-    </div>
-  `;
+/* ---------- heatmap 180 dias ---------- */
+function renderHeatmap(){
+  const el=document.getElementById('heatmap');
+  // alinhar para começar numa segunda-feira, 26 colunas (~182 dias)
+  const DAYS=182;
+  let cells='';
+  for(let i=DAYS-1;i>=0;i--){
+    const date=today(-i);
+    const c=doneCount(date);
+    const ratio=c/HABITS.length;
+    let cls='';
+    if(ratio>=1)cls='hm-3';else if(ratio>=.5)cls='hm-2';else if(ratio>0)cls='hm-1';
+    if(date===today())cls+=' hm-today';
+    cells+=`<span class="hm-cell ${cls}" title="${date} · ${c}/${HABITS.length}"></span>`;
+  }
+  el.innerHTML=cells;
 }
 
-function renderWeek(){
-  const table = document.getElementById('weekTable');
-  const days = [];
-  for(let i=6;i>=0;i--) days.push(todayStr(-i));
-  const fmt = (d) => {
-    const dt = new Date(d+'T00:00:00');
-    return dt.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','');
-  };
-  let thead = '<tr><th></th>' + days.map(d => `<th>${fmt(d)}<br>${d.slice(8,10)}/${d.slice(5,7)}</th>`).join('') + '</tr>';
-  let rows = '';
-  PEOPLE.forEach(p => {
-    rows += `<tr><td class="person">${p.emoji} ${p.name}</td>`;
-    days.forEach(date => {
-      const day = state.logs[p.id][date] || {};
-      const total = state.habits.length;
-      const done = state.habits.filter(h => day[h.id]).length;
-      let level = 0;
-      if(total>0){
-        const ratio = done/total;
-        if(ratio>=1) level=3; else if(ratio>=0.5) level=2; else if(ratio>0) level=1;
-      }
-      const label = total>0 ? (level===3?'💯':(done>0?done:'')) : '';
-      const isSelected = date === selectedDate;
-      rows += `<td><div class="cell c${level}${isSelected?' selected':''}" data-date="${date}" style="cursor:pointer;${isSelected?'outline:2px solid #fff;':''}">${label}</div></td>`;
+/* ---------- trackers ---------- */
+function last7(entries){const cut=today(-6);return entries.filter(e=>e.date>=cut);}
+function sortByDate(arr){return [...arr].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(a.cid<b.cid?1:-1));}
+function shortDate(d){return d.slice(8,10)+'/'+d.slice(5,7);}
+
+function sparkline(svgId,entries,valueFn){
+  const svg=document.getElementById(svgId);if(!svg)return;
+  const pts=[...entries].sort((a,b)=>a.date<b.date?-1:1).map(e=>valueFn(e)).filter(v=>v!=null&&!isNaN(v));
+  if(pts.length<2){svg.innerHTML=`<text x="150" y="26" fill="#5e6884" font-size="11" text-anchor="middle" font-family="Inter">sem dados suficientes</text>`;return;}
+  const W=300,H=44,pad=4;const min=Math.min(...pts),max=Math.max(...pts),range=(max-min)||1;
+  const step=(W-pad*2)/(pts.length-1);
+  const coords=pts.map((v,i)=>[pad+i*step, H-pad-((v-min)/range)*(H-pad*2)]);
+  const line=coords.map((c,i)=>(i?'L':'M')+c[0].toFixed(1)+' '+c[1].toFixed(1)).join(' ');
+  const area=line+` L ${coords[coords.length-1][0].toFixed(1)} ${H} L ${coords[0][0].toFixed(1)} ${H} Z`;
+  const grad=svgId+'g';
+  svg.innerHTML=`<defs><linearGradient id="${grad}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="currentColor" stop-opacity=".35"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#${grad})"/><path d="${line}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  svg.style.color=getComputedStyle(svg.closest('.trk').querySelector('.trk-kpi .num')).color;
+}
+
+function renderTrackers(){
+  /* Peso */
+  const chrono=[...trackers.weight].sort((a,b)=>a.date<b.date?-1:1);
+  document.getElementById('wLatest').textContent=chrono.length?nf(chrono[chrono.length-1].kg):'–';
+  if(chrono.length>=2){const dlt=chrono[chrono.length-1].kg-chrono[0].kg;document.getElementById('wDelta').textContent=(dlt>0?'+':'')+nf(dlt)+' kg';}
+  else document.getElementById('wDelta').textContent='–';
+  sparkline('weightSpark',trackers.weight,e=>+e.kg||0);
+  renderList('weightList',trackers.weight,e=>`${nf(e.kg||0)} kg`);
+}
+function renderList(id,entries,fmt){
+  const el=document.getElementById(id);
+  const rows=sortByDate(entries).slice(0,20);
+  if(!rows.length){el.innerHTML=`<div class="trk-empty">nenhum registro ainda</div>`;return;}
+  el.innerHTML=rows.map(e=>`<li><span class="d">${shortDate(e.date)}</span><span class="v">${fmt(e)}</span><button class="del" data-cid="${e.cid}">✕</button></li>`).join('');
+  el.querySelectorAll('.del').forEach(b=>b.onclick=()=>deleteEntry(b.dataset.cid));
+}
+
+function addEntry(kind){
+  const g=id=>document.getElementById(id);
+  const kg=parseFloat(g('weightKg').value);
+  if(!kg){return;}
+  const entry={cid:cid(),date:g('weightDate').value||today(),kg};
+  g('weightKg').value='';
+  trackers.weight.push(entry);
+  saveTrackers();renderTrackers();
+  cloudInsertEntry('weight',entry);
+}
+function deleteEntry(c){
+  const i=trackers.weight.findIndex(e=>e.cid===c);
+  if(i>=0)trackers.weight.splice(i,1);
+  saveTrackers();renderTrackers();
+  cloudDeleteEntry(c);
+}
+
+/* ---------- render geral ---------- */
+function renderAll(){renderStats();renderDateNav();renderHabits();renderHeatmap();renderTrackers();}
+
+/* ---------- eventos ---------- */
+document.getElementById('prevDay').onclick=()=>changeDate(-1);
+document.getElementById('nextDay').onclick=()=>changeDate(1);
+document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addEntry(b.dataset.add));
+document.getElementById('weightDate').value=today();
+
+/* ============================================================
+   Supabase — sync opcional entre dispositivos
+   ============================================================ */
+const SB_URL='https://ysnwsrndphmgdtynwxtu.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlzbndzcm5kcGhtZ2R0eW53eHR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTIxODEsImV4cCI6MjEwMDQ4ODE4MX0.HzO38CqXLw0JIa0B2uDEzA5CWRSYsuMdbCjRCJgICag';
+const T_HABITS='habit_logs', T_TRK='fitness_log';
+let sb=null, trkOk=true;
+function setSync(icon,msg,color){const el=document.getElementById('syncStatus');if(el)el.innerHTML=`<i class="fa-solid ${icon}" ${color?`style="color:${color}"`:''}></i><span>${msg}</span>`;}
+try{if(window.supabase)sb=window.supabase.createClient(SB_URL,SB_KEY);}catch(e){console.warn(e);}
+if(!sb)setSync('fa-cloud-slash','offline — salvando só neste navegador','var(--text-3)');
+
+async function cloudToggleHabit(habitId,date,isDone){
+  if(!sb)return;
+  const {error}=isDone
+    ? await sb.from(T_HABITS).upsert({person:PERSON,habit_id:habitId,log_date:date,done:true},{onConflict:'person,habit_id,log_date'})
+    : await sb.from(T_HABITS).delete().match({person:PERSON,habit_id:habitId,log_date:date});
+  setSync(error?'fa-triangle-exclamation':'fa-cloud','sincronizado',error?'var(--amber)':'var(--teal)');
+}
+async function cloudInsertEntry(kind,e){
+  if(!sb||!trkOk)return;
+  const row={cid:e.cid,kind,entry_date:e.date,num1:e.kg,num2:null,label:null};
+  const {error}=await sb.from(T_TRK).insert(row);
+  if(error){trkOk=false;console.warn('fitness_log indisponível:',error.message);}
+}
+async function cloudDeleteEntry(c){if(!sb||!trkOk)return;await sb.from(T_TRK).delete().eq('cid',c);}
+
+async function loadCloud(){
+  if(!sb)return;
+  setSync('fa-cloud-arrow-down','sincronizando…','var(--text-2)');
+  // hábitos
+  const h=await sb.from(T_HABITS).select('habit_id,log_date,done').eq('person',PERSON).eq('done',true);
+  if(!h.error){
+    logs={};
+    (h.data||[]).forEach(r=>{if(!logs[r.log_date])logs[r.log_date]={};logs[r.log_date][r.habit_id]=true;});
+    saveHabits();
+  }
+  // trackers
+  const t=await sb.from(T_TRK).select('cid,kind,entry_date,num1,num2,label');
+  if(t.error){trkOk=false;}
+  else{
+    const nw={weight:[]};
+    (t.data||[]).forEach(r=>{
+      if(r.kind==='weight')nw.weight.push({cid:r.cid,date:r.entry_date,kg:+r.num1||0});
     });
-    rows += '</tr>';
-  });
-  table.innerHTML = thead + rows;
-  table.querySelectorAll('.cell[data-date]').forEach(cell => {
-    cell.onclick = () => { selectedDate = cell.dataset.date; render(); };
-  });
+    trackers=nw;saveTrackers();
+  }
+  renderAll();
+  setSync(trkOk?'fa-cloud':'fa-cloud','sincronizado'+(trkOk?'':' (trackers só neste navegador — crie a tabela fitness_log)'),trkOk?'var(--teal)':'var(--amber)');
 }
-
-function render(){
-  renderTabs();
-  renderDateNav();
-  renderStats();
-  renderHabits();
-  renderVersus();
-  renderWeek();
-}
-
-document.getElementById('prevDayBtn').onclick = () => changeDate(-1);
-document.getElementById('nextDayBtn').onclick = () => changeDate(1);
-
-// ===== Supabase sync (shared table across devices/browsers) =====
-const SB_URL = 'https://ysnwsrndphmgdtynwxtu.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlzbndzcm5kcGhtZ2R0eW53eHR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MTIxODEsImV4cCI6MjEwMDQ4ODE4MX0.HzO38CqXLw0JIa0B2uDEzA5CWRSYsuMdbCjRCJgICag';
-const SB_TABLE = 'habit_logs';
-
-function setSyncStatus(msg){
-  const el = document.getElementById('syncStatus');
-  if(el) el.textContent = msg;
-}
-
-let sb = null;
-try{ if(window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY); }catch(e){ console.warn('supabase init failed', e); }
-if(!sb) setSyncStatus('☁️ offline — salvando só neste navegador');
-
-async function syncHabitLog(personId, habitId, date, isDone){
-  if(!sb) return;
-  const error = isDone
-    ? (await sb.from(SB_TABLE).upsert({ person: personId, habit_id: habitId, log_date: date, done: true }, { onConflict: 'person,habit_id,log_date' })).error
-    : (await sb.from(SB_TABLE).delete().match({ person: personId, habit_id: habitId, log_date: date })).error;
-  setSyncStatus(error ? '⚠️ falha ao salvar na nuvem' : '☁️ sincronizado');
-}
-
-function applyCloudRows(rows){
-  PEOPLE.forEach(p => { state.logs[p.id] = {}; });
-  rows.forEach(row => {
-    if(!state.logs[row.person]) return;
-    if(!state.logs[row.person][row.log_date]) state.logs[row.person][row.log_date] = {};
-    state.logs[row.person][row.log_date][row.habit_id] = true;
-  });
-  saveData();
-}
-
-async function loadFromCloud(){
-  if(!sb) return;
-  setSyncStatus('☁️ sincronizando...');
-  const { data, error } = await sb.from(SB_TABLE).select('person,habit_id,log_date,done').eq('done', true);
-  if(error){ setSyncStatus('⚠️ erro ao carregar da nuvem'); return; }
-  applyCloudRows(data || []);
-  render();
-  setSyncStatus('☁️ sincronizado');
-}
-
-function subscribeRealtime(){
-  if(!sb) return;
-  sb.channel('habit_logs_changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: SB_TABLE }, () => loadFromCloud())
+function subscribe(){
+  if(!sb)return;
+  sb.channel('cp_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:T_HABITS},()=>loadCloud())
+    .on('postgres_changes',{event:'*',schema:'public',table:T_TRK},()=>loadCloud())
     .subscribe();
 }
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadCloud();});
+setInterval(()=>{if(!document.hidden)loadCloud();},25000);
 
-document.addEventListener('visibilitychange', () => { if(!document.hidden) loadFromCloud(); });
-setInterval(() => { if(!document.hidden) loadFromCloud(); }, 20000);
-
-render();
-loadFromCloud().then(subscribeRealtime);
+/* ---------- boot ---------- */
+renderAll();
+loadCloud().then(subscribe);
 </script>
+
+<!--
+  ============================================================
+  SQL para criar a tabela dos trackers no Supabase (só uma vez).
+  Cole no SQL Editor do projeto e rode. Sem isso, os trackers
+  funcionam normalmente, mas só neste navegador.
+  ============================================================
+
+  create table if not exists public.fitness_log (
+    cid         text primary key,
+    kind        text not null,
+    entry_date  date not null,
+    num1        numeric,
+    num2        numeric,
+    label       text,
+    created_at  timestamptz default now()
+  );
+  alter table public.fitness_log enable row level security;
+  create policy "anon full access" on public.fitness_log
+    for all using (true) with check (true);
+-->
 </body>
 </html>
