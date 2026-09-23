@@ -115,6 +115,33 @@ body{
 .trk-list .del{flex-shrink:0;width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-3);cursor:pointer;font-size:10px}
 .trk-list .del:hover{border-color:var(--pink);color:var(--pink)}
 .trk-empty{font-size:12px;color:var(--text-3);text-align:center;padding:14px 4px;border:1px dashed var(--border);border-radius:9px}
+/* Jejum */
+.fast-card{background:linear-gradient(160deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem 1.4rem;margin-bottom:1.6rem;text-align:center}
+.fast-card.running{border-color:rgba(124,91,255,.5);box-shadow:0 0 0 1px rgba(124,91,255,.25),0 10px 40px -12px rgba(124,91,255,.5)}
+.fast-timer{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:500;letter-spacing:.02em;line-height:1;margin:.3rem 0 .2rem;color:var(--text)}
+.fast-card.running .fast-timer{color:#b9a5ff}
+.fast-state{font-size:12.5px;color:var(--text-2);margin-bottom:1.3rem;min-height:16px}
+.fast-state b{color:var(--accent-2)}
+.fast-btn{padding:1rem 2.4rem;border-radius:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;border:none;color:#fff;transition:all .2s;display:inline-flex;align-items:center;gap:10px}
+.fast-btn.start{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 8px 26px rgba(124,91,255,.4)}
+.fast-btn.stop{background:linear-gradient(135deg,var(--pink),#e83f82);box-shadow:0 8px 26px rgba(255,91,156,.4)}
+.fast-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.fast-kpis{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.3rem;border-top:1px solid var(--border)}
+.fast-kpi .num{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.fast-kpi .lbl{font-size:10.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-top:5px}
+.fast-kpi.seq .num{color:var(--amber)}
+.fast-kpi.tot .num{color:var(--accent)}
+.fast-kpi.max .num{color:#b9a5ff}
+.fast-kpi.hrs .num{color:var(--teal)}
+.fast-hist{list-style:none;margin-top:1.3rem;padding-top:1.1rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px;text-align:left;max-height:190px;overflow-y:auto}
+.fast-hist li{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--border);font-size:12.5px}
+.fast-hist li:last-child{border:none}
+.fast-hist .d{flex-shrink:0;width:56px;color:var(--text-3);font-family:'JetBrains Mono',monospace;font-size:11px}
+.fast-hist .v{flex:1;color:var(--text);font-weight:600}
+.fast-hist .v small{color:var(--text-2);font-weight:400;margin-left:6px}
+.fast-hist .del{flex-shrink:0;width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-3);cursor:pointer;font-size:10px}
+.fast-hist .del:hover{border-color:var(--pink);color:var(--pink)}
+.fast-empty{font-size:12px;color:var(--text-3);text-align:center;padding:12px 4px}
 .footer{text-align:center;margin-top:2.5rem;font-size:12px;color:var(--text-3)}
 .footer b{color:var(--text-2)}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -151,6 +178,20 @@ body{
     </div>
     <div class="habits" id="habitsList"></div>
     <div class="combo" id="combo">🔥 Dia completo! +20 pontos de bônus</div>
+  </div>
+
+  <div class="sec-title"><i class="fa-solid fa-hourglass-half"></i> Jejum<span class="badge" id="fastBadge">–</span></div>
+  <div class="fast-card" id="fastCard">
+    <div class="fast-timer" id="fastTimer">00:00:00</div>
+    <div class="fast-state" id="fastState">pronta pra começar</div>
+    <button class="fast-btn start" id="fastBtn"><i class="fa-solid fa-play"></i> Começar jejum</button>
+    <div class="fast-kpis">
+      <div class="fast-kpi seq"><div class="num" id="fastSeq">0</div><div class="lbl">sequência 🔥</div></div>
+      <div class="fast-kpi tot"><div class="num" id="fastTot">0</div><div class="lbl">jejuns</div></div>
+      <div class="fast-kpi max"><div class="num" id="fastMax">–</div><div class="lbl">maior jejum</div></div>
+      <div class="fast-kpi hrs"><div class="num" id="fastHrs">0</div><div class="lbl">horas totais</div></div>
+    </div>
+    <ul class="fast-hist" id="fastHist"></ul>
   </div>
 
   <div class="sec-title"><i class="fa-solid fa-fire-flame-curved"></i> Consistência · últimos 180 dias</div>
@@ -197,10 +238,7 @@ const HABITS=[
   {id:'treino',   name:'Musculação',       sub:'treino de força',      icon:'💪'},
   {id:'caminhada',name:'Caminhada',        sub:'sair pra andar',       icon:'🚶‍♀️'},
   {id:'remo',     name:'Remo',             sub:'sessão de remo',       icon:'🚣‍♀️'},
-  {id:'agua',     name:'Beber água',       sub:'2L+ no dia',           icon:'💧'},
-  {id:'alongar',  name:'Alongar / mobilidade', sub:'10 min',           icon:'🧘‍♀️'},
   {id:'dieta',    name:'Comer limpo',      sub:'sem furar a dieta',    icon:'🥗'},
-  {id:'sono',     name:'Dormir bem',       sub:'7h+ de sono',          icon:'😴'},
 ];
 
 /* ---------- helpers de data ---------- */
@@ -214,7 +252,9 @@ const LS_HABITS='cp_habits_v1', LS_TRK='cp_trackers_v1';
 let logs = JSON.parse(localStorage.getItem(LS_HABITS)||'{}');            // {date:{habitId:true}}
 let trackers = JSON.parse(localStorage.getItem(LS_TRK)||'null') || {weight:[]};
 if(!trackers.weight)trackers.weight=[];
+if(!trackers.fast)trackers.fast=[];
 let selDate = today();
+const LS_FAST_ACTIVE='cp_fast_active_v1';   // timestamp (ms) do jejum em andamento
 
 function saveHabits(){localStorage.setItem(LS_HABITS,JSON.stringify(logs));}
 function saveTrackers(){localStorage.setItem(LS_TRK,JSON.stringify(trackers));}
@@ -357,14 +397,99 @@ function deleteEntry(c){
   cloudDeleteEntry(c);
 }
 
+/* ============================================================
+   Jejum — cronômetro + sequência
+   ============================================================ */
+let fastTick=null;
+function fastActiveStart(){const v=localStorage.getItem(LS_FAST_ACTIVE);return v?+v:null;}
+function fmtDur(sec){
+  sec=Math.max(0,Math.floor(sec));
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function fmtHours(sec){const h=sec/3600;return (Math.round(h*10)/10).toLocaleString('pt-BR');}
+// sequência = dias consecutivos (até hoje, com folga pra hoje) com pelo menos 1 jejum concluído
+function fastStreak(){
+  const days=new Set(trackers.fast.map(e=>e.date));
+  let s=0, start=days.has(today())?0:1;
+  for(let off=start;;off++){if(days.has(today(-off)))s++;else break;}
+  return s;
+}
+function startFast(){
+  if(fastActiveStart())return;
+  localStorage.setItem(LS_FAST_ACTIVE,String(Date.now()));
+  renderFast();
+}
+function stopFast(){
+  const st=fastActiveStart();if(!st)return;
+  const end=Date.now();
+  const dur=Math.round((end-st)/1000); // segundos
+  localStorage.removeItem(LS_FAST_ACTIVE);
+  if(dur>=60){ // ignora toques acidentais (< 1 min)
+    const entry={cid:cid(),date:fmtLocal(new Date(st)),dur,start:new Date(st).toISOString(),end:new Date(end).toISOString()};
+    trackers.fast.push(entry);
+    saveTrackers();
+    cloudInsertFast(entry);
+  }
+  renderFast();renderStats();
+}
+function deleteFast(c){
+  const i=trackers.fast.findIndex(e=>e.cid===c);
+  if(i>=0)trackers.fast.splice(i,1);
+  saveTrackers();renderFast();
+  cloudDeleteEntry(c);
+}
+function renderFast(){
+  const st=fastActiveStart();
+  const card=document.getElementById('fastCard');
+  const btn=document.getElementById('fastBtn');
+  const state=document.getElementById('fastState');
+  const timer=document.getElementById('fastTimer');
+  card.classList.toggle('running',!!st);
+  if(st){
+    btn.className='fast-btn stop';btn.innerHTML='<i class="fa-solid fa-stop"></i> Parar e registrar';
+    const started=new Date(st);
+    state.innerHTML=`em jejum desde <b>${started.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</b>`;
+    timer.textContent=fmtDur((Date.now()-st)/1000);
+    if(!fastTick)fastTick=setInterval(()=>{const s=fastActiveStart();if(s)timer.textContent=fmtDur((Date.now()-s)/1000);},1000);
+  }else{
+    btn.className='fast-btn start';btn.innerHTML='<i class="fa-solid fa-play"></i> Começar jejum';
+    state.textContent='pronta pra começar';
+    timer.textContent='00:00:00';
+    if(fastTick){clearInterval(fastTick);fastTick=null;}
+  }
+  // KPIs
+  const list=trackers.fast;
+  document.getElementById('fastSeq').textContent=fastStreak();
+  document.getElementById('fastTot').textContent=list.length;
+  const max=list.reduce((m,e)=>Math.max(m,e.dur||0),0);
+  document.getElementById('fastMax').textContent=max?fmtDur(max):'–';
+  const totSec=list.reduce((s,e)=>s+(e.dur||0),0);
+  document.getElementById('fastHrs').textContent=fmtHours(totSec);
+  document.getElementById('fastBadge').textContent=list.length?fastStreak()+' 🔥':'–';
+  // histórico
+  const hist=document.getElementById('fastHist');
+  const rows=sortByDate(list).slice(0,20);
+  if(!rows.length){hist.innerHTML=`<div class="fast-empty">nenhum jejum registrado ainda</div>`;}
+  else{
+    hist.innerHTML=rows.map(e=>{
+      const t=new Date(e.start);
+      const hh=t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      return `<li><span class="d">${shortDate(e.date)}</span><span class="v">${fmtDur(e.dur)}<small>início ${hh}</small></span><button class="del" data-fc="${e.cid}">✕</button></li>`;
+    }).join('');
+    hist.querySelectorAll('.del').forEach(b=>b.onclick=()=>deleteFast(b.dataset.fc));
+  }
+}
+
 /* ---------- render geral ---------- */
-function renderAll(){renderStats();renderDateNav();renderHabits();renderHeatmap();renderTrackers();}
+function renderAll(){renderStats();renderDateNav();renderHabits();renderHeatmap();renderTrackers();renderFast();}
 
 /* ---------- eventos ---------- */
 document.getElementById('prevDay').onclick=()=>changeDate(-1);
 document.getElementById('nextDay').onclick=()=>changeDate(1);
 document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addEntry(b.dataset.add));
 document.getElementById('weightDate').value=today();
+document.getElementById('fastBtn').onclick=()=>{fastActiveStart()?stopFast():startFast();};
 
 /* ============================================================
    Supabase — sync opcional entre dispositivos
@@ -390,6 +515,11 @@ async function cloudInsertEntry(kind,e){
   const {error}=await sb.from(T_TRK).insert(row);
   if(error){trkOk=false;console.warn('fitness_log indisponível:',error.message);}
 }
+async function cloudInsertFast(e){
+  if(!sb||!trkOk)return;
+  const {error}=await sb.from(T_TRK).insert({cid:e.cid,kind:'fast',entry_date:e.date,num1:e.dur,num2:null,label:e.start});
+  if(error){trkOk=false;console.warn('fitness_log indisponível:',error.message);}
+}
 async function cloudDeleteEntry(c){if(!sb||!trkOk)return;await sb.from(T_TRK).delete().eq('cid',c);}
 
 async function loadCloud(){
@@ -406,9 +536,10 @@ async function loadCloud(){
   const t=await sb.from(T_TRK).select('cid,kind,entry_date,num1,num2,label');
   if(t.error){trkOk=false;}
   else{
-    const nw={weight:[]};
+    const nw={weight:[],fast:[]};
     (t.data||[]).forEach(r=>{
       if(r.kind==='weight')nw.weight.push({cid:r.cid,date:r.entry_date,kg:+r.num1||0});
+      else if(r.kind==='fast')nw.fast.push({cid:r.cid,date:r.entry_date,dur:+r.num1||0,start:r.label||r.entry_date+'T00:00:00'});
     });
     trackers=nw;saveTrackers();
   }
@@ -433,8 +564,9 @@ loadCloud().then(subscribe);
 <!--
   ============================================================
   SQL para criar a tabela dos trackers no Supabase (só uma vez).
-  Cole no SQL Editor do projeto e rode. Sem isso, os trackers
-  funcionam normalmente, mas só neste navegador.
+  Guarda peso corporal (kind='weight') e jejuns (kind='fast').
+  Cole no SQL Editor do projeto e rode. Sem isso, tudo funciona
+  normalmente, mas só neste navegador.
   ============================================================
 
   create table if not exists public.fitness_log (
