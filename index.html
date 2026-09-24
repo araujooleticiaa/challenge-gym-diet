@@ -403,7 +403,7 @@ function deleteEntry(c){
 /* ============================================================
    Jejum — cronômetro + sequência
    ============================================================ */
-let fastTick=null, fastExpanded=false;
+let fastTick=null, fastExpanded=false, fastBusy=false;
 const FAST_PREVIEW=3;
 function fastActiveStart(){const v=localStorage.getItem(LS_FAST_ACTIVE);return v?+v:null;}
 function fmtDur(sec){
@@ -419,22 +419,29 @@ function fastStreak(){
   for(let off=start;;off++){if(days.has(today(-off)))s++;else break;}
   return s;
 }
-function startFast(){
+async function startFast(){
   if(fastActiveStart())return;
-  localStorage.setItem(LS_FAST_ACTIVE,String(Date.now()));
+  fastBusy=true;
+  const startMs=Date.now();
+  localStorage.setItem(LS_FAST_ACTIVE,String(startMs));
   renderFast();
+  await cloudStartFast(startMs);
+  fastBusy=false;
 }
-function stopFast(){
+async function stopFast(){
   const st=fastActiveStart();if(!st)return;
+  fastBusy=true;
   const end=Date.now();
   const dur=Math.round((end-st)/1000); // segundos
   localStorage.removeItem(LS_FAST_ACTIVE);
+  await cloudStopFast();
   if(dur>=60){ // ignora toques acidentais (< 1 min)
     const entry={cid:cid(),date:fmtLocal(new Date(st)),dur,start:new Date(st).toISOString(),end:new Date(end).toISOString()};
     trackers.fast.push(entry);
     saveTrackers();
-    cloudInsertFast(entry);
+    await cloudInsertFast(entry);
   }
+  fastBusy=false;
   renderFast();renderStats();
 }
 function deleteFast(c){
@@ -536,6 +543,14 @@ async function cloudInsertFast(e){
   const {error}=await sb.from(T_TRK).insert({cid:e.cid,kind:'fast',entry_date:e.date,num1:e.dur,num2:null,label:e.start});
   if(error){trkOk=false;console.warn('fitness_log indisponível:',error.message);}
 }
+// jejum em andamento (linha única compartilhada entre aparelhos)
+const FAST_ACTIVE_CID='fast-active-'+PERSON;
+async function cloudStartFast(startMs){
+  if(!sb||!trkOk)return;
+  const {error}=await sb.from(T_TRK).upsert({cid:FAST_ACTIVE_CID,kind:'fast_active',entry_date:today(),num1:startMs,num2:null,label:new Date(startMs).toISOString()},{onConflict:'cid'});
+  if(error){trkOk=false;console.warn('fitness_log indisponível:',error.message);}
+}
+async function cloudStopFast(){if(!sb||!trkOk)return;await sb.from(T_TRK).delete().eq('cid',FAST_ACTIVE_CID);}
 async function cloudDeleteEntry(c){if(!sb||!trkOk)return;await sb.from(T_TRK).delete().eq('cid',c);}
 
 async function loadCloud(){
@@ -553,11 +568,18 @@ async function loadCloud(){
   if(t.error){trkOk=false;}
   else{
     const nw={weight:[],fast:[]};
+    let activeRow=null;
     (t.data||[]).forEach(r=>{
       if(r.kind==='weight')nw.weight.push({cid:r.cid,date:r.entry_date,kg:+r.num1||0});
       else if(r.kind==='fast')nw.fast.push({cid:r.cid,date:r.entry_date,dur:+r.num1||0,start:r.label||r.entry_date+'T00:00:00'});
+      else if(r.kind==='fast_active')activeRow=r;
     });
     trackers=nw;saveTrackers();
+    // nuvem é a fonte da verdade pro timer em andamento (não mexe durante start/stop local)
+    if(!fastBusy){
+      if(activeRow){const ms=+activeRow.num1||Date.parse(activeRow.label);if(ms)localStorage.setItem(LS_FAST_ACTIVE,String(ms));}
+      else localStorage.removeItem(LS_FAST_ACTIVE);
+    }
   }
   renderAll();
   setSync(trkOk?'fa-cloud':'fa-cloud','sincronizado'+(trkOk?'':' (trackers só neste navegador — crie a tabela fitness_log)'),trkOk?'var(--teal)':'var(--amber)');
