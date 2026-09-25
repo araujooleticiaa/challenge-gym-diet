@@ -144,6 +144,17 @@ body{
 .fast-empty{font-size:12px;color:var(--text-3);text-align:center;padding:12px 4px}
 .fast-more{margin-top:.8rem;width:100%;padding:9px 12px;border-radius:10px;cursor:pointer;background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);font-family:inherit;font-size:12.5px;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:7px}
 .fast-more:hover{border-color:var(--border-glow);color:var(--text)}
+.fast-add{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid var(--border)}
+.fast-add input{padding:9px 10px;border-radius:9px;background:var(--bg-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:12.5px;height:38px;box-sizing:border-box}
+.fast-add input[type=time]{width:104px}
+.fast-add input[type=date]{width:150px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.fast-add input:focus{outline:none;border-color:var(--accent)}
+.fast-add .fast-dash{color:var(--text-3);font-size:14px}
+.fast-add .fast-add-btn{height:38px;padding:0 16px;border-radius:9px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.fast-add .fast-add-btn:hover{border-color:var(--accent-2);color:#b9a5ff}
+.fast-msg{font-size:12px;margin-top:.7rem;min-height:14px}
+.fast-msg.err{color:var(--pink)}
+.fast-msg.ok{color:var(--green)}
 .footer{text-align:center;margin-top:2.5rem;font-size:12px;color:var(--text-3)}
 .footer b{color:var(--text-2)}
 @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -193,6 +204,14 @@ body{
       <div class="fast-kpi max"><div class="num" id="fastMax">–</div><div class="lbl">maior jejum</div></div>
       <div class="fast-kpi hrs"><div class="num" id="fastHrs">0</div><div class="lbl">horas totais</div></div>
     </div>
+    <div class="fast-add">
+      <input type="date" id="fastDate" title="Data">
+      <input type="time" id="fastStartIn" title="Início do jejum">
+      <span class="fast-dash">→</span>
+      <input type="time" id="fastEndIn" title="Fim do jejum">
+      <button class="fast-add-btn" id="fastAddBtn"><i class="fa-solid fa-plus"></i> Adicionar manual</button>
+    </div>
+    <div id="fastMsg" class="fast-msg"></div>
     <ul class="fast-hist" id="fastHist"></ul>
     <button class="fast-more" id="fastMore" hidden></button>
   </div>
@@ -444,6 +463,25 @@ async function stopFast(){
   fastBusy=false;
   renderFast();renderStats();
 }
+function addFastManual(){
+  const g=id=>document.getElementById(id);
+  const msg=g('fastMsg');
+  const setMsg=(t,k)=>{msg.textContent=t||'';msg.className='fast-msg'+(k?' '+k:'');};
+  const date=g('fastDate').value||today();
+  const start=g('fastStartIn').value, end=g('fastEndIn').value;
+  if(!start||!end){setMsg('Informe início e fim (HH:MM).','err');return;}
+  const startMs=new Date(date+'T'+start).getTime();
+  let endMs=new Date(date+'T'+end).getTime();
+  if(endMs<=startMs)endMs+=86400000; // vira a noite
+  const dur=Math.round((endMs-startMs)/1000);
+  if(dur<60){setMsg('Duração muito curta.','err');return;}
+  const entry={cid:cid(),date,dur,start:new Date(startMs).toISOString(),end:new Date(endMs).toISOString()};
+  trackers.fast.push(entry);
+  saveTrackers();cloudInsertFast(entry);
+  g('fastStartIn').value='';g('fastEndIn').value='';
+  setMsg('Jejum de '+fmtDur(dur)+' adicionado.','ok');
+  renderFast();renderStats();
+}
 function deleteFast(c){
   const i=trackers.fast.findIndex(e=>e.cid===c);
   if(i>=0)trackers.fast.splice(i,1);
@@ -513,6 +551,8 @@ document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addEntry(b.data
 document.getElementById('weightDate').value=today();
 document.getElementById('fastBtn').onclick=()=>{fastActiveStart()?stopFast():startFast();};
 document.getElementById('fastMore').onclick=()=>{fastExpanded=!fastExpanded;renderFast();};
+document.getElementById('fastAddBtn').onclick=addFastManual;
+document.getElementById('fastDate').value=today();
 
 /* ============================================================
    Supabase — sync opcional entre dispositivos
